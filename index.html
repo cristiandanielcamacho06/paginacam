@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control de LED</title>
+    <style>
+        /* Estilos CSS aquí */
+        button {
+            padding: 10px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Control de LED</h1>
+    <button id="encender">Encender LED</button>
+    <button id="apagar">Apagar LED</button>
+
+    <script>
+        // Crear un cliente MQTT en el navegador (se requiere una biblioteca MQTT en el navegador, como Eclipse Paho)
+        const mqttClient = new Paho.MQTT.Client("tu_broker_mqtt", 1883, "web_client_id");
+
+        // Función para manejar la conexión al servidor MQTT
+        const onConnect = () => {
+            console.log("Conectado al servidor MQTT");
+        };
+
+        // Conectar el cliente MQTT al servidor
+        mqttClient.connect({ onSuccess: onConnect });
+
+        // Función para enviar mensajes MQTT
+        const sendMessage = (topic, message) => {
+            const messageObject = new Paho.MQTT.Message(message);
+            messageObject.destinationName = topic;
+            mqttClient.send(messageObject);
+        };
+
+        // Manejar el clic en el botón "Encender LED"
+        document.getElementById('encender').addEventListener('click', function() {
+            sendMessage('led/control', 'encender');
+        });
+
+        // Manejar el clic en el botón "Apagar LED"
+        document.getElementById('apagar').addEventListener('click', function() {
+            sendMessage('led/control', 'apagar');
+        });
+    </script>
+</body>
+</html>
